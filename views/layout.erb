@@ -1,0 +1,24 @@
+<!doctype html>  
+<html lang="en">  
+<head>  
+  <meta charset="utf8">  
+  <title><%= @title + " | #{SITE_TITLE}" %></title>   
+  <link href="/style.css" rel="stylesheet">  
+</head>  
+<body>  
+  <header>  
+    <hgroup>  
+      <h1 id="title"><a href="/"><%= SITE_TITLE %></a></h1>  
+      <h2><%= SITE_DESCRIPTION %></h2>  
+    </hgroup>  
+  </header>  
+  
+  <div id="main">  
+    <%= yield %>  
+  </div>  
+  
+  <footer>  
+    <p><small>An app by <a href="http://devendayal.com">Deven</a>.</small></p>  
+  </footer>  
+</body>  
+</html>  

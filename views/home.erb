@@ -1,0 +1,34 @@
+<section id="add">  
+  <form action="/" method="post">  
+    <input id="new-item" type="text" name="text" placeholder="enter something like '5 bananas'"></text>  
+    <input type="submit" value="Add">  
+  </form>  
+</section>  
+  
+
+<% if @count != 0 %>
+  <% if @count>1 %>
+    <h1><%= @count %> Items</h1>
+  <% else %>
+    <h1>1 Item</h1>
+  <% end %>
+  <a href="/clearall">start over</a>
+<% else %>
+  <h1>Your list is empty!</h1>
+<% end %>
+
+<p>
+  <% @items.each do |item| %>  
+    <article>  
+      <p>  
+        <%= h item.amt %> <%= h item.name %>  
+        <span><a href="/<%= item.id %>">[edit]</a></span>  
+      </p>  
+      <p class="links">
+        <span><a href="/<%= item.id %>/inc">+1</a></span>  
+        <span><a href="/<%= item.id %>/dec">-1</a></span>  
+        <span><a href="/<%= item.id %>/delete">X</a></span>  
+      </p>  
+    </article>  
+  <% end %>  
+</p>

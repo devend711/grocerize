@@ -1,0 +1,11 @@
+<% if @item %>  
+	<form action="/<%= @item.id %>" method="post" id="edit">  
+	  <input type="hidden" name="_method" value="put">  
+	  <input type="text" value="<%= h @item.amt %>" name="amt"></text>
+	  <input type="text" value="<%= h @item.name %>" name="name"></text>  
+	  <input type="submit" value="Update">  
+	</form>  
+	<p><a href="/<%= @item.id %>/delete">Delete</a></p>  
+<% else %>  
+	<p>Note not found.</p>  
+<% end %>  
