@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'sinatra'  
 require 'data_mapper'
-require 'pony' # email support
+require 'mail'
 require 'resolv' # email validation
 
 
@@ -59,11 +59,16 @@ post '/send' do
   if !validate_email_domain(params[:email])
     redirect '/invalidemail'
   else
-    body = create_email
-    Pony.mail :to => params[:email],
-              :from => 'grocerizer@gmail.com',
-              :subject => 'Grocery List for #{Time.now.strftime("%d/%m/%Y")}',
-              :subject => body
+    this_body = create_email
+
+    mail = Mail.new do
+      from    'grocerizer@gmail.com'
+      to      '#{params[:email]}'
+      subject 'Grocery List for #{Time.now.strftime("%d/%m/%Y")}'
+      body    '#{this_body}'
+    end
+    mail.delivery_method :sendmail
+    mail.deliver
     redirect '/emailsent'
   end
 end
