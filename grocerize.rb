@@ -1,5 +1,9 @@
+require 'rubygems'
 require 'sinatra'  
 require 'data_mapper'
+require 'pony' # email support
+require 'resolv' # email validation
+
 
 SITE_TITLE = "Grocerizer"  
 SITE_DESCRIPTION = "the amazing grocery list"   
@@ -45,6 +49,34 @@ post '/' do
   check_existing(item)
   redirect '/'  
 end  
+
+get '/send' do
+  @title = "Email List"
+  erb :send
+end
+
+post '/send' do
+  if !validate_email_domain(params[:email])
+    redirect '/invalidemail'
+  else
+    body = create_email
+    Pony.mail :to => params[:email],
+              :from => 'grocerizer@gmail.com',
+              :subject => 'Grocery List for #{Time.now.strftime("%d/%m/%Y")}',
+              :subject => body,
+    redirect '/emailsent'
+  end
+end
+
+get '/emailsent' do
+  @title = 'Email Sent!'
+  erb :emailsent
+end
+
+get '/invalidemail' do
+  @title = "Oops!"
+  erb :invalidemail
+end
 
 get '/:id' do  # whenever we area passed an :id key, we want to edit the note
   @item = Item.get params[:id]  
@@ -105,4 +137,23 @@ def check_existing(item)
     existing.save
     item.destroy
   end
+end
+
+def create_email
+  string = ""
+  items = Item.all
+  items.each do |item|
+    string += item.amt.to_s + " " + item.name + "\n" 
+  end
+  return string
+end
+
+def validate_email_domain(email)
+  return false if !email.match(/\@(.+)/)
+  domain = email.match(/\@(.+)/)[1]
+  return false if domain == nil
+  Resolv::DNS.open do |dns|
+      @mx = dns.getresources(domain, Resolv::DNS::Resource::IN::MX)
+  end
+  @mx.size > 0 ? true : false
 end
