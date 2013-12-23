@@ -63,7 +63,7 @@ post '/send' do
     Pony.mail :to => params[:email],
               :from => 'grocerizer@gmail.com',
               :subject => 'Grocery List for #{Time.now.strftime("%d/%m/%Y")}',
-              :subject => body,
+              :subject => body
     redirect '/emailsent'
   end
 end
