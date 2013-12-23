@@ -1,9 +1,10 @@
 require 'rubygems'
-require 'sinatra'  
+require 'sinatra'
 require 'data_mapper'
 require 'mail'
 require 'resolv' # email validation
 
+enable :sessions
 
 SITE_TITLE = "Grocerizer"  
 SITE_DESCRIPTION = "the amazing grocery list"   
@@ -26,12 +27,19 @@ helpers do  # escape XSS
     alias_method :h, :escape_html  # can now call h(some_value)
 end  
 
-get '/' do  
-  @items = Item.all :order => :id.desc  
+get '/' do
+  @alphabetized = session[:alph]
+  puts "alph = " + @alphabetized.to_s
+  @items = get_list(@alphabetized)
   @title = 'Items'  
   @count = Item.count
   erb :home  
 end  
+
+get '/alph' do
+  flip_alph
+  redirect '/'
+end
 
 get '/clearall' do
   Item.all.destroy
@@ -146,11 +154,31 @@ end
 
 def create_email
   string = ""
-  items = Item.all
+  items = get_list(session[:alph])
   items.each do |item|
     string += item.amt.to_s + " " + item.name + "\n" 
   end
   return string
+end
+
+def get_list(alphabetized)
+  if alphabetized
+    Item.all :order => :name.asc
+  else
+    Item.all :order => :id.desc
+  end
+end
+
+def flip_alph
+  session["alph"] ||=false
+  if session["alph"]==nil
+    puts "alph is nil"
+  end
+  if  session["alph"]==nil ||  session["alph"]==true
+     session["alph"]=false
+  else
+     session["alph"]=true
+  end
 end
 
 def validate_email_domain(email)
