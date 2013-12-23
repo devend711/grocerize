@@ -1,4 +1,3 @@
-require 'rubygems'  
 require 'sinatra'  
 require 'data_mapper'
 
@@ -7,7 +6,7 @@ SITE_DESCRIPTION = "the amazing grocery list"
 
 # setup database
 
-DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/recall.db") # create new sql3 database
+DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/grocerize.db") # create new sql3 database
   
 class Item # creates table called 'Notes'
   include DataMapper::Resource  
@@ -49,7 +48,7 @@ end
 
 get '/:id' do  # whenever we area passed an :id key, we want to edit the note
   @item = Item.get params[:id]  
-  @title = "Edit note #{params[:id]}"  
+  @title = "Edit Item"  
   erb :edit  
 end  
 
@@ -63,7 +62,7 @@ end
 
 get '/:id/delete' do  
   @item = Item.get params[:id]  
-  @title = "Confirm deletion of note #{params[:id]}"  
+  @title = "Confirm Deletion of #{@item.name}"  
   erb :delete  
 end 
 
@@ -94,6 +93,7 @@ end
 
 def get_fields(item, text)
   item.amt = text.match(/^a/) ? 1 : text.match(/^[0-9]*/)[0].to_i
+  item.amt = 1 if item.amt == 0
   item.name = text.match(/[A-Za-z\s]*$/).to_s.lstrip.gsub(item.amt.to_s,"")
   item.name.gsub!(/^a /,"")
 end
