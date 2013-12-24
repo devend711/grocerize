@@ -5,7 +5,8 @@
 	  <input type="text" value="<%= h @item.name %>" name="name"></text>  
 	  <input type="submit" value="Update">  
 	</form>  
-	<p><a href="/<%= @item.id %>/delete">Delete</a></p>  
+	<p><a href="/<%= @item.id %>/delete">delete</a>
+	<a href="/">cancel</a></p> 
 <% else %>  
-	<p>Not found.</p>  
+	<p>not found.</p>  
 <% end %>  

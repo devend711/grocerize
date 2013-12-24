@@ -137,10 +137,11 @@ end
 # helper methods
 
 def get_fields(item, text)
-  item.amt = text.match(/^a/) ? 1 : text.match(/^[0-9]*/)[0].to_i
+  item.amt = text.match(/^a /)||text.match(/^an /) ? 1 : text.match(/^[0-9]*/)[0].to_i # match 'a' or 'an', otherwise find a number at start of string
   item.amt = 1 if item.amt == 0
   item.name = text.match(/[A-Za-z\s]*$/).to_s.lstrip.gsub(item.amt.to_s,"")
   item.name.gsub!(/^a /,"")
+  item.name.gsub!(/^an /,"")
 end
 
 def check_existing(item)
