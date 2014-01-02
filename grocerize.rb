@@ -28,7 +28,6 @@ end
 
 get '/' do
   @alphabetized = session[:alph]
-  puts "alph = " + @alphabetized.to_s
   @items = get_list(@alphabetized)
   @title = 'Items'  
   @count = Item.count
@@ -50,9 +49,6 @@ post '/' do
   item = Item.new  
   text=params[:text]
   get_fields(item, text)
-  puts "amt: " + item.amt.to_s
-  puts "name: " + item.name
-  puts "saved? " + item.save.to_s
   check_existing(item)
   redirect '/'  
 end  
