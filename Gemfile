@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'sinatra'
-gem 'data_mapper'
-gem 'pony'
+require 'sinatra'
+require 'data_mapper'
+require 'mail'
+require 'resolv'

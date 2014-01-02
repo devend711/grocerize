@@ -1,0 +1,1 @@
+web: bundle exec ruby grocerize.rb -p $PORT

@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'sinatra'
 require 'data_mapper'
 require 'mail'
@@ -128,7 +127,7 @@ get '/:id/dec' do
   n = Item.get params[:id]  
   n.amt -= 1
   n.save
-  if n.amt<= 0
+  if n.amt<=0
     n.destroy
   end
   redirect '/'  
@@ -159,27 +158,16 @@ def create_email
   items.each do |item|
     string += item.amt.to_s + " " + item.name + "\n" 
   end
-  return string
+  string
 end
 
 def get_list(alphabetized)
-  if alphabetized
-    Item.all :order => :name.asc
-  else
-    Item.all :order => :id.desc
-  end
+  alphabetized ? Item.all(:order=>:name.asc) : Item.all(:order=>:id.desc)
 end
 
 def flip_alph
   session["alph"] ||=false
-  if session["alph"]==nil
-    puts "alph is nil"
-  end
-  if  session["alph"]==nil ||  session["alph"]==true
-     session["alph"]=false
-  else
-     session["alph"]=true
-  end
+  session["alph"] = !session["alph"]
 end
 
 def validate_email_domain(email)
