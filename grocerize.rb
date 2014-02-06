@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'sinatra'
 require 'data_mapper'
 require 'mail'
@@ -5,34 +6,34 @@ require 'resolv' # email validation
 
 enable :sessions
 
-SITE_TITLE = "Grocerizer"  
-SITE_DESCRIPTION = "the amazing grocery list"   
+SITE_TITLE = "Grocerizer"
+SITE_DESCRIPTION = "the amazing grocery list"
 
 # setup database
 
-DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/grocerize.db") # create new sql3 database
+DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/grocerize2.db") # create new sql3 database
   
 class Item # creates table called 'Notes'
-  include DataMapper::Resource  
+  include DataMapper::Resource
   property :id, Serial
-  property :name, String, :required => true  
+  property :name, String, :required => true
   property :amt, Integer, :default => 1
-end  
+end
   
 DataMapper.finalize.auto_upgrade! # update the db when we make any changes
 
-helpers do  # escape XSS
-    include Rack::Utils  
-    alias_method :h, :escape_html  # can now call h(some_value)
-end  
+helpers do # escape XSS
+    include Rack::Utils
+    alias_method :h, :escape_html # can now call h(some_value)
+end
 
 get '/' do
   @alphabetized = session[:alph]
   @items = get_list(@alphabetized)
-  @title = 'Items'  
+  @title = 'Items'
   @count = Item.count
-  erb :home  
-end  
+  erb :home
+end
 
 get '/alph' do
   flip_alph
@@ -43,15 +44,15 @@ get '/clearall' do
   Item.all.destroy
   DataMapper.auto_migrate!
   redirect '/'
-end  
+end
 
-post '/' do  
-  item = Item.new  
+post '/' do
+  item = Item.new
   text=params[:text]
   get_fields(item, text)
   check_existing(item)
-  redirect '/'  
-end  
+  redirect '/'
+end
 
 get '/send' do
   @title = "Email List"
@@ -65,10 +66,10 @@ post '/send' do
     this_body = create_email
 
     mail = Mail.new do
-      from    'grocerizer@gmail.com'
-      to      '#{params[:email]}'
+      from 'grocerizer@gmail.com'
+      to '#{params[:email]}'
       subject 'Grocery List for #{Time.now.strftime("%d/%m/%Y")}'
-      body    '#{this_body}'
+      body '#{this_body}'
     end
     mail.delivery_method :sendmail
     mail.deliver
@@ -86,47 +87,47 @@ get '/invalidemail' do
   erb :invalidemail
 end
 
-get '/:id' do  # whenever we area passed an :id key, we want to edit the note
-  @item = Item.get params[:id]  
-  @title = "Edit Item"  
-  erb :edit  
-end  
+get '/:id' do # whenever we area passed an :id key, we want to edit the note
+  @item = Item.get params[:id]
+  @title = "Edit Item"
+  erb :edit
+end
 
-put '/:id' do # 'put' is a RESTful way to update our db 
-  n = Item.get params[:id]  
-  n.name = params[:name]  
-  n.amt = params[:amt]  
-  n.save  
-  redirect '/'  
-end  
+put '/:id' do # 'put' is a RESTful way to update our db
+  n = Item.get params[:id]
+  n.name = params[:name]
+  n.amt = params[:amt]
+  n.save
+  redirect '/'
+end
 
-get '/:id/delete' do  
-  @item = Item.get params[:id]  
-  @title = "Confirm Deletion of #{@item.name}"  
-  erb :delete  
-end 
+get '/:id/delete' do
+  @item = Item.get params[:id]
+  @title = "Confirm Deletion of #{@item.name}"
+  erb :delete
+end
 
-delete '/:id' do  
-  n = Item.get params[:id]  
-  n.destroy  
-  redirect '/'  
-end 
+delete '/:id' do
+  n = Item.get params[:id]
+  n.destroy
+  redirect '/'
+end
 
-get '/:id/inc' do  
-  n = Item.get params[:id]  
+get '/:id/inc' do
+  n = Item.get params[:id]
   n.amt += 1
-  n.save  
-  redirect '/'  
-end  
+  n.save
+  redirect '/'
+end
 
-get '/:id/dec' do  
-  n = Item.get params[:id]  
+get '/:id/dec' do
+  n = Item.get params[:id]
   n.amt -= 1
   n.save
   if n.amt<=0
     n.destroy
   end
-  redirect '/'  
+  redirect '/'
 end
 
 # helper methods
@@ -152,7 +153,7 @@ def create_email
   string = ""
   items = get_list(session[:alph])
   items.each do |item|
-    string += item.amt.to_s + " " + item.name + "\n" 
+    string += item.amt.to_s + " " + item.name + "\n"
   end
   string
 end
